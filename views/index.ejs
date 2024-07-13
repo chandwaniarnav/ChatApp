@@ -1,0 +1,47 @@
+<html>
+<head>
+  <title>Chat App</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const alertParam = urlParams.get('alert');
+    if (alertParam === 'user-registered') {
+        alert('User regsitered');
+    }
+    else if (alertParam === 'invalid-user') {
+        alert('User does not exist');
+    }
+    else if (alertParam === 'login-unsuccessful') {
+        alert('Invalid Credentials');
+    }
+    else if (alertParam === 'password-changed') {
+        alert('Password Changed');
+    }
+    else if (alertParam === 'user-deleted') {
+        alert('User Deleted');
+    }
+    });
+  </script>
+</head>
+<body>
+  <div class="form-container">
+    <form action="/chat" method="POST">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" placeholder="Enter username" required><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Enter password" required>
+        <center><button type="submit">Login</button></center>
+    </form>
+    <div class="create-button">
+      <button class="button-blue" onclick="location.href='new';">New User</button>
+  </div>
+  <div class="create-password">
+    <button class="button-green" onclick="location.href='password';">Change Password</button>
+</div>
+<div class="delete-button">
+  <button class="button-red" onclick="location.href='delete';">Delete User</button>
+</div>
+  </div>
+</body>
+</html>

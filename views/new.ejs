@@ -1,0 +1,20 @@
+<html>
+    <head>
+        <title>Register User</title>
+        <link rel="stylesheet" href="/css/newstyle.css">
+    </head>
+    <body>
+        <div class="form-container">
+            <div class="centered">
+                <h2>Register New User</h2>
+            </div>
+            <form action="/new" method="POST" enctype="application/x-www-form-urlencoded">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" placeholder="Enter username" required><br>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" placeholder="Enter password" required>
+                <button type="submit">Register</button>
+            </form>
+        </div>
+    </body>
+</html>

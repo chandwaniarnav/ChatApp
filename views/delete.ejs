@@ -1,0 +1,29 @@
+<html>
+<head>
+  <title>Delete User</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script >
+    document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const alertParam = urlParams.get('alert');
+     if (alertParam === 'invalid-user') {
+        alert('User does not exist');
+    }
+    else if (alertParam === 'login-unsuccessful') {
+        alert('Invalid Credentials');
+    }
+    });
+  </script>
+</head>
+<body>
+  <div class="form-container">
+    <form action="/delete" method="POST">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" placeholder="Enter username" required><br>
+        <label for="password">Password:</label>
+        <input type="password" placeholder="Enter Password" id="password" name="password" required>
+        <center><button type="submit">Delete User</button></center>
+    </form>
+  </div>
+</body>
+</html>

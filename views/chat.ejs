@@ -1,0 +1,136 @@
+
+<html>
+<head>
+  <title>Chat</title>
+  <link rel="stylesheet" href="/css/chatstyles.css">
+  <script>
+    var token='<%=token%>'
+     document.addEventListener('DOMContentLoaded', function() {
+      fetch('/chat', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    })
+        });
+  </script>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="main-chat">
+      <div class="form-container">
+        <h2>Welcome to Chat App, <%= username %>!</h2>
+        <ul id="messages" style="overflow-y: auto; max-height: 700px;">
+          <% messages.forEach(msg => { %>
+            <li class="<%= (msg.user_id === user.id) ? 'sent' : 'received' %>">
+              <% if (msg.is_image) { %><div style="padding-bottom: 20px; height: 10px;">
+                <%= msg.user.username %>:</div><img src="<%= msg.message %>" alt="Image" width="200px" height="200px">
+              <% } else { %>
+                <%= msg.user.username %>: <%= msg.message %>
+              <% } %>
+              <input type="hidden" id="token" value="<%= token %>">
+            </li>
+          <% }); %>
+        </ul>
+        <form id="form" action="">
+          <input type="file" id="fileInput" accept="image/*" style="display: none;">
+          <button onclick="chooseFile()" class="upload-button">Upload</button>
+          <input type="text" placeholder="Type your message" id="m" autocomplete="off" />
+          <button type="button" onclick="sendMessage()">Send</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io();
+    var username = '<%= username %>';
+    var form = document.getElementById('form');
+    var input = document.getElementById('m');
+    var messages = document.getElementById('messages');
+    var fileInput = document.getElementById('fileInput');
+  
+    function chooseFile() {
+      fileInput.click();
+    }
+  
+    fileInput.addEventListener('change', function() {
+  var file = fileInput.files[0];
+  var reader = new FileReader();
+  reader.onload = function() {
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var ctx = canvas.getContext('2d');
+      var maxWidth = 200; 
+      var maxHeight = 200; 
+      var width = img.width;
+      var height = img.height;
+
+      if (width > maxWidth || height > maxHeight) {
+        var ratio = Math.min(maxWidth / width, maxHeight / height);
+        canvas.width = width * ratio;
+        canvas.height = height * ratio;
+      } else {
+        canvas.width = width;
+        canvas.height = height;
+      }
+
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      var dataUrl = canvas.toDataURL('image/jpeg'); 
+
+      socket.emit('chat message', { 
+        username: username, 
+        message: dataUrl, 
+        isImage: true 
+      });
+    };
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+});
+;
+  
+    function sendMessage() {
+      if (input.value.trim() !== '') {
+        socket.emit('chat message', { 
+          username: username, 
+          message: input.value.trim(), 
+          isImage: false 
+        });
+        input.value = '';
+      }
+    }
+  
+    socket.on('connect', function() {
+      console.log('Connected');
+    });
+  
+    socket.on('chat message', function(msg) {
+      var li = document.createElement('li');
+      if (msg.isImage) {
+        var img = document.createElement('img');
+        img.src = msg.message;
+        li.appendChild(img);
+      } else {
+        li.textContent = msg.username + ': ' + msg.message;
+      }
+      var messageClass = (msg.username === username) ? 'sent' : 'received';
+      li.className = messageClass;
+      messages.appendChild(li);
+    });
+  
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+    });
+  
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault(); 
+        sendMessage(); 
+      }
+    });
+  </script> 
+</body>
+</html>

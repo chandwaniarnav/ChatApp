@@ -1,0 +1,45 @@
+<html>
+<head>
+  <title>Chat</title>
+  <link rel="stylesheet" href="/css/chatstyles.css">
+</head>
+<body>
+  <div class="chat-container">
+    <div class="main-chat">
+      <div class="form-container">
+        <h2>Messages by <%= username %>!</h2>
+        <ul id="messages" style="overflow-y: auto; max-height: 700px;">
+          <% messages.forEach(msg => { %>
+            <li class="<%= (msg.user_id === User.id) ? 'sent' : 'received' %>">
+              <% if (msg.is_image) { %><div style="padding-bottom: 20px; height: 10px;">
+                <%= msg.user.username %>:</div><img src="<%= msg.message %>" alt="Image" width="200px" height="200px">
+              <% } else { %>
+                <%= msg.user.username %>: <%= msg.message %>
+              <% } %>
+            </li>
+          <% }); %>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io();
+var username = '<%= username %>';
+var form = document.getElementById('form');
+var input = document.getElementById('m');
+var messages = document.getElementById('messages');
+socket.on('connect', function() {
+  console.log('Connected');
+});
+socket.on('chat message', function(msg) {
+  var li = document.createElement('li');
+  var messageClass = (msg.username === username) ? 'sent' : 'received';
+  li.className = messageClass;
+  li.textContent = msg.username + ': ' + msg.message;
+  messages.appendChild(li);
+});
+
+  </script>
+</body>
+</html>

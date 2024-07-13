@@ -1,0 +1,62 @@
+<html>
+<head>
+  <title>Users Data</title>
+  <link rel="stylesheet" href="/css/datastyle.css">
+  <script >
+    function toggleUserDelete(userId) {
+     const isChecked = document.querySelector(`[data-user-id="${userId}"]`).checked;
+       var token= '<%=token%>';
+     const queryParams = new URLSearchParams({
+       userId: userId,
+       is_deleted: isChecked ? 0 : 1,
+       token: token  
+     });
+     fetch(`/user?${queryParams.toString()}`, {
+       method: 'GET',
+       headers: {
+         'Content-Type': 'application/json',
+         'Authorization': `Bearer ${token}`
+       },
+     })
+     .then(response => {
+       if (!response.ok) {
+         throw new Error('Failed to update user status');
+       }
+       console.log(`User ${userId} status updated successfully`);
+     })
+     .catch(error => {
+       console.error('Error updating user status:', error);
+     });
+   }
+   </script>
+</head>
+<body>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Active</th>
+        <th>View</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% data.forEach(user=> { %>
+        <tr>
+          <td><%= user.id %></td>
+          <td><%= user.username %></td>
+          <td>
+            <input type="hidden" id="token" value="<%= token %>">
+            <input type="checkbox" onchange="toggleUserDelete('<%= user.id %>')" class="delete-checkbox" data-user-id="<%= user.id %>" <%= user.is_deleted === 0 ? 'checked' : '' %> >
+          </td>
+            <td><form action="/message/<%=user.id%>" method="POST">
+          <label for="token"></label> <input type="hidden" id="token" name="token" value="<%= token %>"> 
+              <center><button class="view-btn" type="submit">View</button></center>
+            </form>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</body>
+</html>
